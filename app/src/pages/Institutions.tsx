@@ -74,7 +74,7 @@ export default function Institutions() {
 
   return (
     <div className="page">
-      <PageHeader eyebrow="For educators / Institution readiness" title="A course cannot substitute for a responsible institution.">
+      <PageHeader eyebrow="For institutions" title="A course cannot substitute for a responsible institution.">
         <p>
           Before any session runs, the institution needs prepared facilitators, verified support information, clear procedures,
           appropriate follow-up and privacy-conscious evaluation. This page demonstrates how that readiness could be tracked.

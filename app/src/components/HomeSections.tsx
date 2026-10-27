@@ -1,14 +1,29 @@
 import { useEffect, useRef, useState, type ComponentType } from 'react';
 import { Link } from 'react-router-dom';
-import { IconArrowRight, IconArrowUpRight, IconChat, IconPause, SymbolEquality, SymbolHand, SymbolSpeak, SymbolSupport } from './Icons';
+import {
+  IconArrowRight,
+  IconArrowUpRight,
+  IconChat,
+  IconCompass,
+  IconGrid,
+  IconLifeRing,
+  IconPause,
+  IconPeople,
+  SymbolEquality,
+  SymbolHand,
+  SymbolSpeak,
+  SymbolSupport,
+} from './Icons';
 
-/* ── Topic symbols ─────────────────────────────────────────────────────── */
+/* ── Topic data for the hero symbols and context strip ─────────────────── */
 // Educational statements, not legal definitions.
 export interface HeroTopic {
   id: string;
   label: string;
+  tooltip: [string, string];
   statement: string;
-  action: { label: string; to: string; state?: unknown };
+  scenarioId: string;
+  scenarioTitle: string;
   Symbol: ComponentType<{ size?: number }>;
 }
 
@@ -16,36 +31,44 @@ export const heroTopics: HeroTopic[] = [
   {
     id: 'boundaries',
     label: 'Boundaries',
-    statement: 'Respect another person’s choices.',
-    action: { label: 'Explore a situation', to: '/practice/after-not-tonight' },
+    tooltip: ['Respect a boundary.', 'Explore a situation.'],
+    statement: 'A relationship never creates an obligation.',
+    scenarioId: 'after-not-tonight',
+    scenarioTitle: 'After “not tonight”',
     Symbol: SymbolHand,
   },
   {
     id: 'equality',
     label: 'Equality',
-    statement: 'Attention and affection are not owed.',
-    action: { label: 'Explore a situation', to: '/practice/just-persistent' },
+    tooltip: ['Choices belong to each person.', 'Explore a situation.'],
+    statement: 'Another person’s choices are not yours to control.',
+    scenarioId: 'just-persistent',
+    scenarioTitle: '“He’s just persistent”',
     Symbol: SymbolEquality,
   },
   {
     id: 'speak-up',
     label: 'Speak up',
-    statement: 'Question behaviour that others excuse.',
-    action: { label: 'Explore a situation', to: '/practice/outnumbered' },
+    tooltip: ['Question harm safely.', 'Explore a situation.'],
+    statement: 'You can question harmful behaviour without joining it.',
+    scenarioId: 'outnumbered',
+    scenarioTitle: 'Outnumbered',
     Symbol: SymbolSpeak,
   },
   {
     id: 'support',
     label: 'Support',
-    statement: 'Listen without blame.',
-    action: { label: 'View support options', to: '/questions-support', state: { focus: 'support' } },
+    tooltip: ['Listen first.', 'Explore a situation.'],
+    statement: 'Listen without blame. Ask what support is wanted.',
+    scenarioId: 'dont-tell-anyone',
+    scenarioTitle: '“Don’t tell anyone”',
     Symbol: SymbolSupport,
   },
 ];
 
-/** Four symbols. Labels only by default; selecting one reveals a sentence and one action.
- *  Works with click, touch and keyboard (Tab, then Enter or Space). */
-export function InteractiveTopicSymbols({ selected, onSelect }: { selected: string | null; onSelect: (id: string) => void }) {
+/* ── InteractiveTopicSymbols ───────────────────────────────────────────── */
+export function InteractiveTopicSymbols({ selected, onSelect }: { selected: string; onSelect: (id: string) => void }) {
+  const [tip, setTip] = useState<string | null>(null);
   return (
     <div className="symbols" role="group" aria-label="Choose a topic">
       <svg className="symbols-links" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
@@ -56,12 +79,30 @@ export function InteractiveTopicSymbols({ selected, onSelect }: { selected: stri
         const on = selected === t.id;
         return (
           <div key={t.id} className={`symbol-cell ${on ? 'is-selected' : ''}`}>
-            <button type="button" className="symbol-btn" aria-pressed={on} aria-controls="topic-context" onClick={() => onSelect(t.id)}>
+            <button
+              type="button"
+              className="symbol-btn"
+              aria-pressed={on}
+              aria-describedby={`tip-${t.id}`}
+              onClick={() => onSelect(t.id)}
+              onMouseEnter={() => setTip(t.id)}
+              onMouseLeave={() => setTip((x) => (x === t.id ? null : x))}
+              onFocus={() => setTip(t.id)}
+              onBlur={() => setTip((x) => (x === t.id ? null : x))}
+            >
               <span className="symbol-ring">
                 <t.Symbol size={64} />
               </span>
-              <span className="symbol-label">{t.label}</span>
+              <span className="symbol-label">
+                {t.label}
+                {on && <span className="sr-only"> (selected)</span>}
+              </span>
             </button>
+            <span id={`tip-${t.id}`} role="tooltip" className={`symbol-tip ${tip === t.id ? 'is-on' : ''}`}>
+              {t.tooltip[0]}
+              <br />
+              {t.tooltip[1]}
+            </span>
           </div>
         );
       })}
@@ -69,68 +110,123 @@ export function InteractiveTopicSymbols({ selected, onSelect }: { selected: stri
   );
 }
 
-/** Context revealed after a symbol is chosen. Empty (but present for screen readers) until then. */
-export function TopicContextStrip({ topic }: { topic: HeroTopic | null }) {
+/* ── TopicContextStrip ─────────────────────────────────────────────────── */
+export function TopicContextStrip({ topic }: { topic: HeroTopic }) {
   return (
-    <div id="topic-context" className={`context-strip ${topic ? 'is-on' : 'is-empty'}`} aria-live="polite">
-      {topic && (
-        <div className="cs-inner" key={topic.id}>
-          <p className="cs-label">{topic.label}</p>
-          <p className="cs-statement">{topic.statement}</p>
-          <Link className="cs-action" to={topic.action.to} state={topic.action.state}>
-            {topic.action.label} <IconArrowUpRight />
-          </Link>
-        </div>
-      )}
+    <div className="context-strip" aria-live="polite">
+      <div className="cs-inner" key={topic.id}>
+        <p className="cs-label">{topic.label}</p>
+        <p className="cs-statement">{topic.statement}</p>
+        <Link className="cs-action" to={`/practice/${topic.scenarioId}`}>
+          Try this situation <IconArrowUpRight />
+          <span className="sr-only">: {topic.scenarioTitle}</span>
+        </Link>
+      </div>
     </div>
   );
 }
 
+/* ── HeroSection ───────────────────────────────────────────────────────── */
 export function HeroSection() {
-  const [selected, setSelected] = useState<string | null>(null);
-  const topic = heroTopics.find((t) => t.id === selected) ?? null;
+  const [selected, setSelected] = useState(heroTopics[0].id);
+  const topic = heroTopics.find((t) => t.id === selected)!;
   return (
     <section className="hero2" aria-labelledby="hero-h">
       <div className="hero2-grid">
         <div className="hero2-text">
           <p className="label-rule">
-            <span>SAMMAN / Respect in practice</span>
+            <span>Respect in practice</span>
           </p>
           <h1 id="hero-h" className="hero2-h">
             What would <br className="br-desk" />
             you do <br className="br-desk" />
             differently?
           </h1>
-          <p className="hero2-sub">Practise consent, challenge harmful behaviour, and take responsibility.</p>
+          <p className="hero2-sub">Practise consent. Question harmful norms. Take responsibility.</p>
           <div className="hero2-actions">
             <Link className="btn btn-accent" to="/practice">
-              Try a situation <IconArrowUpRight />
+              Start a scenario <IconArrowUpRight />
             </Link>
-            <Link className="text-link" to="/why">
-              Why SAMMAN? <IconArrowRight size={16} />
+            <Link className="text-link" to="/quiz">
+              New here? Start with your age <IconArrowRight size={16} />
             </Link>
           </div>
+          <p className="hero2-note">Interactive prototype. Proposed first audience: college students aged 18–22.</p>
         </div>
-        <InteractiveTopicSymbols selected={selected} onSelect={(id) => setSelected((cur) => (cur === id ? null : id))} />
+        <InteractiveTopicSymbols selected={selected} onSelect={setSelected} />
       </div>
       <TopicContextStrip topic={topic} />
     </section>
   );
 }
 
-/* ── Scenario preview (burgundy) ───────────────────────────────────────── */
+/* ── TopicColumns ──────────────────────────────────────────────────────── */
+const columns = [
+  {
+    n: '01',
+    Icon: SymbolSpeak,
+    h: 'In the group chat',
+    p: 'What looks like a joke might not be harmless.',
+    to: '/practice',
+    topic: 'digital',
+    sr: 'Explore group-chat scenarios',
+  },
+  {
+    n: '02',
+    Icon: SymbolHand,
+    h: 'When someone says no',
+    p: 'Respect a boundary. Do not pressure someone to change it.',
+    to: '/practice',
+    topic: 'consent',
+    sr: 'Explore boundaries scenarios',
+  },
+  {
+    n: '03',
+    Icon: SymbolSupport,
+    h: 'When a friend needs support',
+    p: 'Listen without blame. Let them guide the support they want.',
+    to: '/practice',
+    topic: 'support',
+    sr: 'Explore supportive-response scenarios',
+  },
+];
+
+export function TopicColumns() {
+  return (
+    <section className="topic-cols" aria-label="Where practice begins">
+      {columns.map((c) => (
+        <article key={c.n} className="topic-col">
+          <div className="tc-head">
+            <span className="tc-num">{c.n}</span>
+            <c.Icon size={40} />
+          </div>
+          <h2 className="tc-h">{c.h}</h2>
+          <p>{c.p}</p>
+          <Link to={c.to} state={{ topic: c.topic }} className="arrow-only">
+            <IconArrowRight />
+            <span className="sr-only">{c.sr}</span>
+          </Link>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+/* ── ScenarioPreview + PausePanel ─────────────────────────────────────── */
 const previewOptions = [
   {
     id: 'challenge',
     label: 'Challenge the comment calmly',
     feedback:
-      'You could name the behaviour and explain why it is not harmless — for example, “That’s not a great joke about her.” Consider the situation and your safety; direct confrontation is not always appropriate, and it is never required.',
+      'You could name the behaviour and explain why it is not harmless — for example, “That’s not a great joke about her.” Consider the situation and your safety; direct confrontation is not always the appropriate option, and it is never required.',
+    lens: 'What assumption is operating? That a joke has no effect on what the group finds acceptable.',
   },
   {
     id: 'check-in',
     label: 'Check in and seek support',
     feedback:
-      'Private support can be useful. Ask what the person wants rather than assuming, taking over, or sharing their experience with others.',
+      'Private support can be useful. Ask what the person wants rather than assuming, taking over, or sharing their experience with others. You can also raise it with a friend privately later.',
+    lens: 'Whose choice matters? The person the comment was about — support follows what they want.',
   },
 ];
 
@@ -155,120 +251,140 @@ export function PausePanel({ onResume, onLeave }: { onResume: () => void; onLeav
   );
 }
 
-/** Preview: heading, context and one action. Choices appear only after "Explore your options". */
 export function ScenarioPreview() {
-  const [stage, setStage] = useState<'closed' | 'open' | 'paused' | 'left'>('closed');
   const [choice, setChoice] = useState('');
   const [explored, setExplored] = useState(false);
-  const openRef = useRef<HTMLParagraphElement>(null);
+  const [mode, setMode] = useState<'active' | 'paused' | 'left'>('active');
   const fbRef = useRef<HTMLDivElement>(null);
   const opt = previewOptions.find((o) => o.id === choice);
 
   useEffect(() => {
-    if (stage === 'open') openRef.current?.focus();
-  }, [stage]);
-  useEffect(() => {
     if (explored) fbRef.current?.focus();
   }, [explored]);
-
-  const leave = () => {
-    setChoice('');
-    setExplored(false);
-    setStage('left');
-  };
 
   return (
     <section className="scenario-block" aria-labelledby="sp-h">
       <div className="sb-inner">
         <p className="label-rule on-dark">
-          <span>Fictional scenario</span>
+          <span>Practise / 01</span>
         </p>
         <h2 id="sp-h" className="sb-h">
           Everyone laughed. Would you?
         </h2>
         <p className="sb-context">A friend dismisses a degrading comment as a joke.</p>
 
-        {stage === 'closed' && (
-          <button type="button" className="btn btn-light" onClick={() => setStage('open')}>
-            Explore your options <IconArrowRight size={16} />
-          </button>
-        )}
+        {mode === 'paused' && <PausePanel onResume={() => setMode('active')} onLeave={() => setMode('left')} />}
 
-        {stage === 'left' && (
+        {mode === 'left' && (
           <div className="pause-panel">
             <p>You left this scenario. Nothing was recorded.</p>
-            <button type="button" className="btn btn-light" onClick={() => setStage('open')}>
+            <button
+              type="button"
+              className="btn btn-light"
+              onClick={() => {
+                setChoice('');
+                setExplored(false);
+                setMode('active');
+              }}
+            >
               Start again
             </button>
           </div>
         )}
 
-        {stage === 'paused' && <PausePanel onResume={() => setStage('open')} onLeave={leave} />}
-
-        {stage === 'open' && (
-          <div className="sb-open">
-            <p className="sb-more" ref={openRef} tabIndex={-1}>
-              At lunch, a friend jokes that a classmate only got her internship because of her looks. Two people laugh. She isn’t
-              there. What could you do?
-            </p>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (choice) setExplored(true);
-              }}
-            >
-              <fieldset className="sb-fieldset">
-                <legend className="sr-only">Choose a possible response</legend>
-                {previewOptions.map((o) => (
-                  <label key={o.id} className={`sb-option ${choice === o.id ? 'is-on' : ''}`}>
-                    <input
-                      type="radio"
-                      name="sp-choice"
-                      value={o.id}
-                      checked={choice === o.id}
-                      onChange={() => {
-                        setChoice(o.id);
-                        setExplored(false);
-                      }}
-                    />
-                    <span className="sb-radio" aria-hidden="true" />
-                    <span>{o.label}</span>
-                  </label>
-                ))}
-              </fieldset>
-              {choice && !explored && (
-                <button type="submit" className="btn btn-accent sb-explore">
-                  Explore this response <IconArrowRight size={16} />
-                </button>
-              )}
-            </form>
-
-            {explored && opt && (
-              <div className="sb-feedback" ref={fbRef} tabIndex={-1} aria-live="polite">
-                <p className="sb-fb-tag">Possible approach — depends on context</p>
-                <p>{opt.feedback}</p>
-                <div className="btn-row">
-                  <Link className="btn btn-light" to="/practice/only-a-joke">
-                    Continue in the full scenario
-                  </Link>
-                </div>
-              </div>
+        {mode === 'active' && (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (choice) setExplored(true);
+            }}
+          >
+            <fieldset className="sb-fieldset">
+              <legend className="sr-only">Choose a possible response</legend>
+              {previewOptions.map((o) => (
+                <label key={o.id} className={`sb-option ${choice === o.id ? 'is-on' : ''}`}>
+                  <input
+                    type="radio"
+                    name="sp-choice"
+                    value={o.id}
+                    checked={choice === o.id}
+                    onChange={() => {
+                      setChoice(o.id);
+                      setExplored(false);
+                    }}
+                  />
+                  <span className="sb-radio" aria-hidden="true" />
+                  <span>{o.label}</span>
+                </label>
+              ))}
+            </fieldset>
+            {choice && !explored && (
+              <button type="submit" className="btn btn-accent sb-explore">
+                Explore this response <IconArrowRight size={16} />
+              </button>
             )}
+          </form>
+        )}
 
-            <div className="sb-controls">
-              <button type="button" className="btn btn-outline-light" onClick={() => setStage('paused')}>
-                <IconPause /> Pause
-              </button>
-              <button type="button" className="btn btn-outline-light" onClick={leave}>
-                Skip
-              </button>
-              <Link className="btn btn-outline-light" to="/questions-support" state={{ focus: 'support' }}>
-                <IconChat /> Support
+        {mode === 'active' && explored && opt && (
+          <div className="sb-feedback" ref={fbRef} tabIndex={-1} aria-live="polite">
+            <p className="sb-fb-tag">Possible approach — suitability depends on context</p>
+            <p>{opt.feedback}</p>
+            <p className="sb-lens">{opt.lens}</p>
+            <div className="btn-row">
+              <Link className="btn btn-light" to="/practice/only-a-joke">
+                Continue in the full scenario
               </Link>
+              <button type="button" className="btn-text on-dark" onClick={() => setChoice(choice === 'challenge' ? 'check-in' : 'challenge')}>
+                Explore the other response
+              </button>
             </div>
           </div>
         )}
+
+        <div className="sb-foot">
+          <p className="sb-note">Fictional scenario. Pause or skip at any time.</p>
+          <div className="sb-controls">
+            <button type="button" className="btn btn-outline-light" onClick={() => setMode(mode === 'paused' ? 'active' : 'paused')} aria-pressed={mode === 'paused'}>
+              <IconPause /> Pause
+            </button>
+            <Link className="btn btn-outline-light" to="/questions-support" state={{ focus: 'support' }}>
+              <IconChat /> Support
+            </Link>
+          </div>
+        </div>
       </div>
     </section>
+  );
+}
+
+/* ── BottomNavigationStrip ────────────────────────────────────────────── */
+const bottomLinks = [
+  { label: 'Explore', to: '/learn', Icon: IconCompass },
+  { label: 'Practise', to: '/practice', Icon: IconGrid },
+  { label: 'Facilitate', to: '/facilitators', Icon: IconPeople },
+  { label: 'Support', to: '/questions-support', Icon: IconLifeRing },
+];
+
+export function BottomNavigationStrip() {
+  return (
+    <nav className="bottom-strip" aria-label="Explore SAMMAN">
+      <p className="bs-statement">
+        Four sessions.
+        <br />
+        More than awareness.
+      </p>
+      <ul className="bs-links">
+        {bottomLinks.map(({ label, to, Icon }) => (
+          <li key={label}>
+            <Link to={to} className="bs-link">
+              <Icon size={34} />
+              <span className="bs-label">{label}</span>
+              <IconArrowRight size={16} className="bs-arrow" />
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }

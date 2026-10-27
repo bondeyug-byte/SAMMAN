@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { MemoryRouter, Navigate, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
+import { MemoryRouter, Route, Routes, useLocation, useNavigate } from 'react-router-dom';
 import { DemoStateProvider, useDemo } from './state/DemoState';
 import Layout from './components/Layout';
 import Home from './pages/Home';
@@ -11,9 +11,6 @@ import Institutions from './pages/Institutions';
 import QuestionsSupport from './pages/QuestionsSupport';
 import Evidence from './pages/Evidence';
 import Quiz from './pages/Quiz';
-import Why from './pages/Why';
-import Educators from './pages/Educators';
-import Privacy from './pages/Privacy';
 import NotFound from './pages/NotFound';
 
 // Routes are held in memory (MemoryRouter) so the prototype works as a single static file
@@ -72,11 +69,6 @@ function SizedRoot() {
           <Route path="/questions-support" element={<QuestionsSupport />} />
           <Route path="/evidence" element={<Evidence />} />
           <Route path="/quiz" element={<Quiz />} />
-          <Route path="/why" element={<Why />} />
-          <Route path="/educators" element={<Educators />} />
-          <Route path="/privacy" element={<Privacy />} />
-          <Route path="/support" element={<Navigate to="/questions-support" replace />} />
-          <Route path="/practise" element={<Navigate to="/practice" replace />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>

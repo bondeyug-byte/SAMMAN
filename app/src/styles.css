@@ -880,31 +880,3 @@ textarea, input[type='text'], input[type='date'], select { background: var(--pap
 @media (min-width: 900px) {
   .proto-bar-inner, .proto-about { margin-left: 0; padding-left: max(32px, var(--gutter)); padding-right: max(32px, var(--gutter-r)); max-width: 1180px; }
 }
-
-/* ── Simplified IA ─────────────────────────── */
-.home-top { padding-bottom: 48px; }
-.context-strip { transition: border-color 200ms; }
-.context-strip.is-empty { border-color: transparent; background: none; min-height: 0; margin-top: 24px; }
-.sb-open { animation: crossfade 300ms var(--ease); }
-.sb-more { font-size: 1.05rem; max-width: 60ch; color: var(--on-dark); margin-bottom: 18px; }
-.sb-more:focus { outline: none; }
-.sb-more:focus-visible { outline: 2px solid var(--on-dark); outline-offset: 4px; }
-.sb-open .sb-controls { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--border-on-dark); }
-.scenario-block { margin-top: 0; }
-.scenario-block .sb-inner { padding-bottom: 56px; }
-.hub-list { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--ink); }
-.hub-list li { margin: 0; border-bottom: 1px solid var(--border-subtle); }
-.hub-link { display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.6fr); gap: 4px 32px; padding: 20px 0; text-decoration: none; color: var(--ink); }
-.hub-link:hover .hub-title { text-decoration: underline; text-underline-offset: 0.2em; }
-.hub-title { font-size: 1.25rem; font-weight: 650; letter-spacing: -0.015em; }
-.hub-title::after { content: ' →'; color: var(--accent); }
-.hub-desc { color: var(--slate); max-width: var(--measure); }
-@media (max-width: 700px) { .hub-link { grid-template-columns: 1fr; } }
-.plain-list { max-width: var(--measure); padding-left: 1.3rem; }
-.plain-list li { padding: 4px 0; }
-.compact-footer { padding-block: 26px calc(26px + env(safe-area-inset-bottom, 0px)); }
-.cf-inner { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 12px 32px; }
-.cf-links { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
-.cf-links li { margin: 0; }
-.cf-links a { color: var(--on-dark); font-size: 0.92rem; }
-.cf-note { margin: 0; font-size: 0.84rem; color: var(--on-dark-muted); }
