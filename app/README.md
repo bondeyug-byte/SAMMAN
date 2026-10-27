@@ -36,6 +36,9 @@ src/
 
 ### Routes
 
+Homepage is experience-first (hero, four topic symbols, one scenario preview). Detail lives on: `#why` (mission and approach), `#learn`, `#practice`, `#educators` (hub for `#facilitators` and `#institutions`), `#evidence`, `#questions-support`, `#privacy`, and `#quiz` (age-based check).
+
+
 Routes run in memory (`MemoryRouter`) so the single file works on any static host. Each view is mirrored to a plain hash token so it can be linked to: `#learn`, `#practice`, `#practice.forwarded`, `#facilitators`, `#institutions`, `#questions-support`, `#evidence`. On a real server, swap in `BrowserRouter` to get the paths `/`, `/learn`, `/practice/:scenarioId` and so on.
 
 ### Scenario engine

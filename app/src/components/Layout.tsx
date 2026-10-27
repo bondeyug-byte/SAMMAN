@@ -2,21 +2,27 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useDemo, type TextSize } from '../state/DemoState';
 
-import { IconBook, IconBuilding, IconCompass, IconDocument, IconGrid, IconLifeRing, IconPeople, IconStart } from './Icons';
+import { IconBook, IconCompass, IconGrid, IconLifeRing, IconPeople } from './Icons';
 
-// Primary destinations in the left rail (matching the reference design).
+// Which routes light up each destination.
+const sections: Record<string, string[]> = {
+  '/': ['/', '/why'],
+  '/learn': ['/learn', '/quiz'],
+  '/practice': ['/practice'],
+  '/educators': ['/educators', '/facilitators', '/institutions'],
+  '/questions-support': ['/questions-support'],
+};
+const isIn = (to: string, path: string) =>
+  (sections[to] ?? [to]).some((p) => (p === '/' ? path === '/' : path === p || path.startsWith(p + '/')));
+
+// Concise destinations in the left rail. Secondary pages (Why SAMMAN, Evidence, Privacy,
+// facilitator toolkit, institution readiness, age-based check) are reached from pages and the footer.
 const primaryNav = [
   { to: '/', label: 'Discover', end: true, Icon: IconCompass },
-  { to: '/practice', label: 'Practise', Icon: IconGrid },
-  { to: '/facilitators', label: 'Facilitate', Icon: IconPeople },
-  { to: '/questions-support', label: 'Support', Icon: IconLifeRing },
-];
-// Existing views kept reachable from a quieter secondary group.
-const secondaryNav = [
-  { to: '/quiz', label: 'Start', long: 'Start with your age', Icon: IconStart },
-  { to: '/learn', label: 'Learn', long: 'Learning programme', Icon: IconBook },
-  { to: '/institutions', label: 'Institutions', long: 'For institutions', Icon: IconBuilding },
-  { to: '/evidence', label: 'Evidence', long: 'Evidence and pilot', Icon: IconDocument },
+  { to: '/learn', label: 'Learn', end: false, Icon: IconBook },
+  { to: '/practice', label: 'Practise', end: false, Icon: IconGrid },
+  { to: '/educators', label: 'Educators', end: false, Icon: IconPeople },
+  { to: '/questions-support', label: 'Support', end: false, Icon: IconLifeRing },
 ];
 
 function PrototypeBar({ onLeave, onReset }: { onLeave: () => void; onReset: () => void }) {
@@ -82,6 +88,7 @@ function PrototypeBar({ onLeave, onReset }: { onLeave: () => void; onReset: () =
 }
 
 function AppSidebar() {
+  const { pathname } = useLocation();
   return (
     <aside className="rail" aria-label="SAMMAN navigation">
       <Link to="/" className="rail-wordmark" aria-label="SAMMAN, Respect in Practice — home">
@@ -92,17 +99,7 @@ function AppSidebar() {
         <ul className="rail-list">
           {primaryNav.map(({ to, label, end, Icon }) => (
             <li key={to}>
-              <NavLink to={to} end={end} className="rail-item">
-                <Icon />
-                <span>{label}</span>
-              </NavLink>
-            </li>
-          ))}
-        </ul>
-        <ul className="rail-list rail-secondary" aria-label="More pages">
-          {secondaryNav.map(({ to, label, long, Icon }) => (
-            <li key={to}>
-              <NavLink to={to} className="rail-item rail-item-sm" title={long}>
+              <NavLink to={to} end={end} className={() => `rail-item ${isIn(to, pathname) ? 'active' : ''}`} aria-current={isIn(to, pathname) ? 'page' : undefined}>
                 <Icon />
                 <span>{label}</span>
               </NavLink>
@@ -133,7 +130,7 @@ function MobileHeader() {
       </div>
       <nav id="m-nav" className="m-nav" hidden={!open} aria-label="Main">
         <ul>
-          {[...primaryNav.map((n) => ({ ...n, long: n.label })), ...secondaryNav.map((n) => ({ ...n, end: false }))].map(({ to, long, Icon, end }) => (
+          {primaryNav.map(({ to, label: long, Icon, end }) => (
             <li key={to}>
               <NavLink to={to} end={end}>
                 <Icon size={20} />
@@ -147,42 +144,19 @@ function MobileHeader() {
   );
 }
 
-function Footer({ onReset }: { onReset: () => void }) {
+function Footer() {
   return (
-    <footer className="site-footer">
-      <div className="wrap footer-grid">
-        <div>
-          <p className="footer-wm">SAMMAN</p>
-          <p>Respect in Practice. An interactive prototype of a proposed prevention-learning programme for college students aged 18–22.</p>
-        </div>
-        <div>
-          <h2 className="footer-h">Prototype status</h2>
-          <p>
-            Proposed content. Professional review pending. No partnerships, approvals, reviews or results exist. The site does not
-            replace legal accountability, professional care or institutional procedures.
-          </p>
-        </div>
-        <div>
-          <h2 className="footer-h">Privacy</h2>
-          <p>No login, analytics, tracking, uploads or storage. Answers stay in this tab’s memory until refresh or reset.</p>
-          <button type="button" className="btn-text on-dark" onClick={onReset}>
-            Reset demonstration
-          </button>
-        </div>
-        <div>
-          <h2 className="footer-h">Find</h2>
-          <ul className="footer-links">
-            <li>
-              <Link to="/questions-support">Support information</Link>
-            </li>
-            <li>
-              <Link to="/evidence">Sources and evidence register</Link>
-            </li>
-            <li>
-              <Link to="/facilitators">Facilitator toolkit</Link>
-            </li>
+    <footer className="site-footer compact-footer">
+      <div className="wrap cf-inner">
+        <nav aria-label="Footer">
+          <ul className="cf-links">
+            <li><Link to="/why">Why SAMMAN</Link></li>
+            <li><Link to="/educators">For educators</Link></li>
+            <li><Link to="/evidence">Evidence</Link></li>
+            <li><Link to="/privacy">Privacy</Link></li>
           </ul>
-        </div>
+        </nav>
+        <p className="cf-note">Educational prototype—not a live support or complaint service.</p>
       </div>
     </footer>
   );
@@ -271,7 +245,7 @@ export default function Layout() {
             <Outlet />
           </div>
         </main>
-        <Footer onReset={() => setConfirming(true)} />
+        <Footer />
       </div>
       {confirming && (
         <ResetConfirm

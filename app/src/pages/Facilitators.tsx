@@ -82,7 +82,7 @@ export default function Facilitators() {
 
   return (
     <div className={`page ${printView ? 'print-view' : ''}`}>
-      <PageHeader eyebrow="Facilitator toolkit" title="Prepared facilitators, bounded roles.">
+      <PageHeader eyebrow="For educators / Facilitator toolkit" title="Prepared facilitators, bounded roles.">
         <p>
           Practical, non-clinical guidance for running SAMMAN sessions. Facilitators lead discussion; they are not counsellors,
           investigators or legal advisers. The institution’s approved procedures always take precedence.
