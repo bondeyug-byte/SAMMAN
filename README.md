@@ -6,7 +6,7 @@ A little more prepared. Practical situations and safer journeys, at your own pac
 
 ## Open it
 
-- **Website (GitHub Pages):** `index.html`, which loads Learn from `learn.html`. Use this on phones: location sharing and maps need a secure (https) website.
+- **Website (Vercel or GitHub Pages):** `index.html`, which loads Learn from `learn.html`. Use this on phones: location sharing and maps need a secure (https) website.
 - **One file:** `SAMMAN-single-file.html` contains everything, for sharing or offline use. Opened from WhatsApp or a downloaded file, phones may block location and calls; the website version avoids that.
 
 ## Sections
@@ -24,15 +24,17 @@ A little more prepared. Practical situations and safer journeys, at your own pac
 |---|---|
 | `shell/` | Home, Guide, Emergency and the app frame: `index.html`, `styles.css`, `config.js` (all scoring numbers and the helpline list), `sample-data.js`, `scoring.js`, `app.js` |
 | `app/` | Learn: React + TypeScript (Vite). See [`app/README.md`](app/README.md) |
-| `build.mjs` | Builds Learn, bundles Leaflet (no CDN), and writes `index.html`, `learn.html` and `SAMMAN-single-file.html` |
+| `tools/` | Build script: builds Learn, bundles Leaflet (no CDN), and writes `index.html`, `learn.html` and `SAMMAN-single-file.html` to the repo root |
 
 ```bash
-npm install            # root: installs Leaflet for bundling
 (cd app && npm install)
+cd tools && npm install
 npm run build          # builds Learn and the app; use "npm run build:shell" if only shell/ changed
 ```
 
-Edit `shell/` or `app/src/`, never the generated root HTML files.
+Edit `shell/` or `app/src/`, then build and commit the generated root HTML files.
+
+**Deploying:** the repo root has no `package.json` on purpose. Vercel and GitHub Pages publish the committed HTML files directly, with no build step. Don't add a root `package.json`, or Vercel will try to build and fail.
 
 ## External services (free, public)
 

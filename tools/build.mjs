@@ -1,19 +1,26 @@
 // Builds SAMMAN from source.
 //   shell/  Home, Guide (safe routes), Emergency and the app frame
 //   app/    Learn (React + TypeScript), built with Vite into one HTML file
-// Outputs (repo root, served by GitHub Pages):
+// Outputs (repo root, served as static files by Vercel or GitHub Pages):
 //   index.html               the SAMMAN app; loads Learn from learn.html
 //   learn.html               the Learn app on its own (also used inside index.html)
 //   SAMMAN-single-file.html  everything in one file, for sharing or offline use
 import { execSync } from 'node:child_process';
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+// Tooling lives in tools/ so the repo root has no package.json: Vercel and GitHub Pages
+// then publish the ready-built HTML files as they are, with no build step on their side.
+const toolsDir = dirname(fileURLToPath(import.meta.url));
+process.chdir(join(toolsDir, '..'));
 
 const skipApp = process.argv.includes('--skip-app');
 if (!skipApp) execSync('npm run build', { cwd: 'app', stdio: 'inherit' });
 
 const read = (p) => readFileSync(p, 'utf8');
-const leafletDir = 'node_modules/leaflet/dist';
-if (!existsSync(leafletDir)) throw new Error('Run "npm install" in the repo root first (needs leaflet).');
+const leafletDir = join(toolsDir, 'node_modules/leaflet/dist');
+if (!existsSync(leafletDir)) throw new Error('Run "npm install" inside tools/ first (needs leaflet).');
 
 // Guard against "</script>" inside inlined code ending the tag early.
 const safeJs = (code) => code.replace(/<\/script/gi, '<\\/script');
