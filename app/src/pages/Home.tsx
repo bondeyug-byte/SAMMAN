@@ -4,6 +4,7 @@ import { layers, loop, statements } from '../content/home';
 import { sessions } from '../content/programme';
 import { scenarioById } from '../content/scenarios';
 import { BottomNavigationStrip, HeroSection, ScenarioPreview, TopicColumns } from '../components/HomeSections';
+import { SaferJourneys } from './SafeTravel';
 import { Disclosure, Eyebrow, FictionLabel, Reveal, Rule, useReveal } from '../components/ui';
 
 const chapters = [
@@ -184,6 +185,7 @@ export default function Home() {
       <div className="home-top">
         <HeroSection />
         <TopicColumns />
+        <SaferJourneys />
       </div>
       <ScenarioPreview />
 

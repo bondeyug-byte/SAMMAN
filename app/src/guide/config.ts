@@ -1,10 +1,21 @@
-/* ===== config.js ===== */
+// Safe travel settings and the emergency helpline list (ported from SAMMAN 4.0 config.js).
+// Change numbers here, not in the other files. "How grades are worked out" reads from this file.
+
+export interface HelpEntry {
+  name: string;
+  group: string;
+  purpose: string;
+  contacts: { label: string; dial?: string; url?: string }[];
+  source: string;
+  note?: string;
+}
+
 /* SAMMAN settings.
    Change numbers here, not in the other files. Everything shown in
    "How we score routes" is read from this file, so the screen always
    matches the maths. */
 
-const CONFIG = {
+export const CONFIG = {
   weightsNote:
     "Demo weights adapted from NightWise's scoring. They will be replaced " +
     "with SAMMAN's own survey results.",
@@ -48,11 +59,11 @@ const CONFIG = {
 
   exampleTrip: { from: "Thane railway station", to: "Viviana Mall, Thane" },
   educationLink: "https://samman-ten.vercel.app/",
-};
+} as const;
 
 /* Only entries confirmed from an official or operator source.
    Cybercrime portal (1930) is left out until confirmed on the official site. */
-const HELP_DIRECTORY = [
+export const HELP_DIRECTORY: HelpEntry[] = [
   {
     name: "Emergency Response Support System",
     group: "In immediate danger",

@@ -1,12 +1,8 @@
 {
-  "name": "samman",
+  "name": "samman-tools",
   "private": true,
-  "description": "SAMMAN: Learn (React app in app/) plus the Guide, Emergency and Home shell (shell/).",
+  "description": "Build script for SAMMAN. Kept out of the repo root so hosts serve index.html without building.",
   "scripts": {
-    "build": "node build.mjs",
-    "build:shell": "node build.mjs --skip-app"
-  },
-  "devDependencies": {
-    "leaflet": "1.9.4"
+    "build": "node build.mjs"
   }
 }

@@ -128,3 +128,37 @@ export const SymbolSupport = ({ size = 72, ...p }: P) => (
     <path d="M42 22v10c0 3-1.5 5-4 7l-5.5 4.5H26V36c0-2 1-3.5 2.5-4.5L34 27a2 2 0 0 1 2.8 2.8L33 34" />
   </svg>
 );
+
+/* ── Safe travel and emergency (24) ─────────── */
+export const IconPin = ({ size = 26, ...p }: P) => (
+  <svg {...base(size, 24, p)}>
+    <path d="M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11z" />
+    <circle cx="12" cy="10" r="2.5" />
+  </svg>
+);
+export const IconPhone = ({ size = 26, ...p }: P) => (
+  <svg {...base(size, 24, p)}>
+    <path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z" />
+  </svg>
+);
+export const IconLocate = ({ size = 20, ...p }: P) => (
+  <svg {...base(size, 24, p)}>
+    <circle cx="12" cy="12" r="3" />
+    <circle cx="12" cy="12" r="8" />
+    <path d="M12 2v2M12 20v2M2 12h2M20 12h2" />
+  </svg>
+);
+export const IconClock = ({ size = 20, ...p }: P) => (
+  <svg {...base(size, 24, p)}>
+    <circle cx="12" cy="12" r="9" />
+    <path d="M12 7v5l3 2" />
+  </svg>
+);
+export const IconDirection = ({ dir, size = 20, ...p }: P & { dir: string }) => (
+  <svg {...base(size, 24, p)}>
+    {dir === 'left' ? <path d="M17 20v-7a3 3 0 0 0-3-3H6M10 6l-4 4 4 4" />
+      : dir === 'right' ? <path d="M7 20v-7a3 3 0 0 1 3-3h8M14 6l4 4-4 4" />
+      : dir === 'flag' ? <path d="M5 21V4h11l-2 4 2 4H5" />
+      : <path d="M12 20V5M6 11l6-6 6 6" />}
+  </svg>
+);

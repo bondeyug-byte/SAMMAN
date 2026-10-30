@@ -12,6 +12,10 @@ import QuestionsSupport from './pages/QuestionsSupport';
 import Evidence from './pages/Evidence';
 import Quiz from './pages/Quiz';
 import NotFound from './pages/NotFound';
+import Emergency from './pages/Emergency';
+import { GuideHow, GuidePlan, GuideRoute, GuideRoutes } from './pages/SafeTravel';
+import { GuideProvider } from './guide/GuideState';
+import { HelpProvider } from './help/HelpSheet';
 
 // Routes are held in memory (MemoryRouter) so the prototype works as a single static file
 // on any host. Each view is mirrored to a plain #token so links can be shared,
@@ -51,12 +55,13 @@ function HashSync() {
 }
 
 function SizedRoot() {
-  const { textSize } = useDemo();
+  const { textSize, resetCount } = useDemo();
   useEffect(() => {
     document.documentElement.dataset.textSize = textSize;
   }, [textSize]);
   return (
-    <>
+    <GuideProvider key={resetCount}>
+      <HelpProvider>
       <HashSync />
       <Routes>
         <Route element={<Layout />}>
@@ -69,10 +74,16 @@ function SizedRoot() {
           <Route path="/questions-support" element={<QuestionsSupport />} />
           <Route path="/evidence" element={<Evidence />} />
           <Route path="/quiz" element={<Quiz />} />
+          <Route path="/guide" element={<GuidePlan />} />
+          <Route path="/guide/routes" element={<GuideRoutes />} />
+          <Route path="/guide/route" element={<GuideRoute />} />
+          <Route path="/guide/how" element={<GuideHow />} />
+          <Route path="/emergency" element={<Emergency />} />
           <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
-    </>
+      </HelpProvider>
+    </GuideProvider>
   );
 }
 

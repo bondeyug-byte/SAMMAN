@@ -1,11 +1,12 @@
-/* ===== sample-data.js ===== */
+import type { OsmElement, Tags, Trip } from './scoring';
+
 /* Backup trip, used only when live map data doesn't respond.
    Everything here is made up. It uses the same format as the live
    OpenStreetMap data, so the scoring code treats both the same way. */
 
-const SAMPLE = (() => {
-  const node = (lat, lon, tags) => ({ type: "node", lat, lon, tags });
-  const way = (pts, tags) => ({
+export const SAMPLE: Trip = (() => {
+  const node = (lat: number, lon: number, tags: Tags): OsmElement => ({ type: "node", lat, lon, tags });
+  const way = (pts: [number, number][], tags: Tags): OsmElement => ({
     type: "way",
     geometry: pts.map(([lat, lon]) => ({ lat, lon })),
     tags,

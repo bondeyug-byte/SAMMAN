@@ -2,14 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useDemo, type TextSize } from '../state/DemoState';
 
-const embedded = typeof window !== 'undefined' && window.name === 'samman-embed';
-
-import { IconBook, IconBuilding, IconCompass, IconDocument, IconGrid, IconLifeRing, IconPeople, IconStart } from './Icons';
+import { IconBook, IconBuilding, IconCompass, IconDocument, IconGrid, IconLifeRing, IconPeople, IconPhone, IconPin, IconStart } from './Icons';
+import { useHelp } from '../help/HelpSheet';
 
 // Primary destinations in the left rail (matching the reference design).
 const primaryNav = [
   { to: '/', label: 'Discover', end: true, Icon: IconCompass },
   { to: '/practice', label: 'Practise', Icon: IconGrid },
+  { to: '/guide', label: 'Safe travel', Icon: IconPin },
+  { to: '/emergency', label: 'Emergency', Icon: IconPhone },
   { to: '/facilitators', label: 'Facilitate', Icon: IconPeople },
   { to: '/questions-support', label: 'Support', Icon: IconLifeRing },
 ];
@@ -84,12 +85,16 @@ function PrototypeBar({ onLeave, onReset }: { onLeave: () => void; onReset: () =
 }
 
 function AppSidebar() {
+  const { openHelp } = useHelp();
   return (
     <aside className="rail" aria-label="SAMMAN navigation">
       <Link to="/" className="rail-wordmark" aria-label="SAMMAN, Respect in Practice — home">
         SAMMAN
         <span className="rail-dash" aria-hidden="true" />
       </Link>
+      <button type="button" className="help-pill rail-help" aria-haspopup="dialog" onClick={openHelp}>
+        Help
+      </button>
       <nav aria-label="Main">
         <ul className="rail-list">
           {primaryNav.map(({ to, label, end, Icon }) => (
@@ -117,18 +122,19 @@ function AppSidebar() {
 }
 
 function MobileHeader() {
+  const { openHelp } = useHelp();
   const [open, setOpen] = useState(false);
   const loc = useLocation();
   useEffect(() => setOpen(false), [loc.pathname]);
   return (
     <header className="m-header">
       <div className="m-header-inner">
-        <Link to="/" className="m-wordmark" aria-label={embedded ? 'Learn — start' : 'SAMMAN — home'}>
-          {embedded ? 'Learn' : 'SAMMAN'}
+        <Link to="/" className="m-wordmark" aria-label="SAMMAN — home">
+          SAMMAN
         </Link>
-        <Link to="/questions-support" state={{ focus: 'support' }} className="m-support">
-          Support
-        </Link>
+        <button type="button" className="help-pill m-help" aria-haspopup="dialog" onClick={openHelp}>
+          Help
+        </button>
         <button type="button" className="m-menu" aria-expanded={open} aria-controls="m-nav" onClick={() => setOpen((o) => !o)}>
           {open ? 'Close' : 'Menu'}
         </button>
