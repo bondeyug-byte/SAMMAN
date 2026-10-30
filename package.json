@@ -1,0 +1,12 @@
+{
+  "name": "samman",
+  "private": true,
+  "description": "SAMMAN: Learn (React app in app/) plus the Guide, Emergency and Home shell (shell/).",
+  "scripts": {
+    "build": "node build.mjs",
+    "build:shell": "node build.mjs --skip-app"
+  },
+  "devDependencies": {
+    "leaflet": "1.9.4"
+  }
+}

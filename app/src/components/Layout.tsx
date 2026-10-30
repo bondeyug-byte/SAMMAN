@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useDemo, type TextSize } from '../state/DemoState';
 
+const embedded = typeof window !== 'undefined' && window.name === 'samman-embed';
+
 import { IconBook, IconBuilding, IconCompass, IconDocument, IconGrid, IconLifeRing, IconPeople, IconStart } from './Icons';
 
 // Primary destinations in the left rail (matching the reference design).
@@ -121,8 +123,8 @@ function MobileHeader() {
   return (
     <header className="m-header">
       <div className="m-header-inner">
-        <Link to="/" className="m-wordmark" aria-label="SAMMAN — home">
-          SAMMAN
+        <Link to="/" className="m-wordmark" aria-label={embedded ? 'Learn — start' : 'SAMMAN — home'}>
+          {embedded ? 'Learn' : 'SAMMAN'}
         </Link>
         <Link to="/questions-support" state={{ focus: 'support' }} className="m-support">
           Support
